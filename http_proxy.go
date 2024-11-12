@@ -30,7 +30,7 @@ func proxyRequest(w http.ResponseWriter, r *http.Request, tunnel Tunnel, httpCli
 	downstreamReqHeaders := r.Header.Clone()
 
 	upstreamAddr := fmt.Sprintf("%s:%d", address, port)
-	upstreamUrl := fmt.Sprintf("http://%s%s", upstreamAddr, r.URL.RequestURI())
+	upstreamUrl := fmt.Sprintf("https://%s%s", upstreamAddr, r.URL.RequestURI())
 
 	upstreamReq, err := http.NewRequest(r.Method, upstreamUrl, r.Body)
 	if err != nil {
