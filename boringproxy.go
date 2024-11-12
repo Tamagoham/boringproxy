@@ -304,6 +304,8 @@ func Listen() {
 				return
 			}
 
+			log.Println("FROM", r.RemoteAddr)
+
 			proxyRequest(w, r, tunnel, httpClient, "localhost", tunnel.TunnelPort, *behindProxy)
 		}
 	})
