@@ -296,6 +296,8 @@ func Listen() {
 			}
 		} else {
 
+			log.Println("FROM", r.RemoteAddr)
+
 			tunnel, exists := db.GetTunnel(hostDomain)
 			if !exists {
 				errMessage := fmt.Sprintf("No tunnel attached to %s", hostDomain)
@@ -365,6 +367,8 @@ func (p *Server) handleConnection(clientConn net.Conn, certConfig *certmagic.Con
 		p.passthroughRequest(passConn, tunnel)
 	} else if exists && tunnel.TlsTermination == "server-tls" {
 		useTls := true
+		log.Println("clientConn addr", clientConn.RemoteAddr())
+		log.Println("passConn addr", passConn.RemoteAddr())
 		err := ProxyTcp(passConn, "127.0.0.1", tunnel.TunnelPort, useTls, certConfig)
 		if err != nil {
 			log.Println(err.Error())
