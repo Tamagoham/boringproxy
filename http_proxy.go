@@ -77,6 +77,7 @@ func proxyRequest(w http.ResponseWriter, r *http.Request, tunnel Tunnel, httpCli
 			xForwardedFor = xForwardedFor + ", " + remoteHost
 		}
 	}
+	log.Println("X-Forwarded-For: ", xForwardedFor)
 
 	upstreamReq.Header.Set("X-Forwarded-For", xForwardedFor)
 	upstreamReq.Header.Set("Forwarded", fmt.Sprintf("for=%s", remoteHost))
