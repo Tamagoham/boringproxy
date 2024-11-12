@@ -367,9 +367,20 @@ func (p *Server) handleConnection(clientConn net.Conn, certConfig *certmagic.Con
 		p.passthroughRequest(passConn, tunnel)
 	} else if exists && tunnel.TlsTermination == "server-tls" {
 		useTls := true
-		log.Println("clientConn addr", clientConn.RemoteAddr())
-		log.Println("passConn addr", passConn.RemoteAddr())
-		err := ProxyTcp(passConn, "127.0.0.1", tunnel.TunnelPort, useTls, certConfig)
+		// print log to test.txt
+		logFile, err := os.OpenFile("test.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println("Failed to open log file:", err)
+			return
+		}
+		defer logFile.Close()
+
+		logger := log.New(logFile, "", log.LstdFlags)
+		logger.Println("Handling connection for", clientHello.ServerName)
+		logger.Println("clientConn addr", clientConn.RemoteAddr())
+		logger.Println("passConn addr", passConn.RemoteAddr())
+
+		err = ProxyTcp(passConn, "127.0.0.1", tunnel.TunnelPort, useTls, certConfig)
 		if err != nil {
 			log.Println(err.Error())
 			return
