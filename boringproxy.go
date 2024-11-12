@@ -392,6 +392,9 @@ func (p *Server) passthroughRequest(conn net.Conn, tunnel Tunnel) {
 	}
 	defer upstreamConn.Close()
 
+	log.Println(conn.RemoteAddr())
+	log.Println(upstreamConn.RemoteAddr())
+
 	var wg sync.WaitGroup
 	wg.Add(2)
 
