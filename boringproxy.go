@@ -367,18 +367,6 @@ func (p *Server) handleConnection(clientConn net.Conn, certConfig *certmagic.Con
 		p.passthroughRequest(passConn, tunnel)
 	} else if exists && tunnel.TlsTermination == "server-tls" {
 		useTls := true
-		// print log to test.txt
-		logFile, err := os.OpenFile("test.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			log.Println("Failed to open log file:", err)
-			return
-		}
-		defer logFile.Close()
-
-		logger := log.New(logFile, "", log.LstdFlags)
-		logger.Println("Handling connection for", clientHello.ServerName)
-		logger.Println("clientConn addr", clientConn.RemoteAddr())
-		logger.Println("passConn addr", passConn.RemoteAddr())
 
 		err = ProxyTcp(passConn, "127.0.0.1", tunnel.TunnelPort, useTls, certConfig)
 		if err != nil {
@@ -386,6 +374,7 @@ func (p *Server) handleConnection(clientConn net.Conn, certConfig *certmagic.Con
 			return
 		}
 	} else {
+		log.Println("Passing connection to httpListener", passConn.RemoteAddr())
 		p.httpListener.PassConn(passConn)
 	}
 }
@@ -394,6 +383,8 @@ func (p *Server) passthroughRequest(conn net.Conn, tunnel Tunnel) {
 
 	upstreamAddr := fmt.Sprintf("localhost:%d", tunnel.TunnelPort)
 	upstreamConn, err := net.Dial("tcp", upstreamAddr)
+	log.Println("Connecting to", upstreamAddr)
+	log.Println("From", conn.RemoteAddr())
 
 	if err != nil {
 		log.Print(err)
