@@ -325,6 +325,7 @@ func (c *Client) BoreTunnel(ctx context.Context, tunnel Tunnel) error {
 		httpMux := http.NewServeMux()
 
 		httpMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			log.Println(r.RemoteAddr)
 			proxyRequest(w, r, tunnel, c.httpClient, tunnel.ClientAddress, tunnel.ClientPort, c.behindProxy)
 		})
 
@@ -359,6 +360,8 @@ func (c *Client) BoreTunnel(ctx context.Context, tunnel Tunnel) error {
 				} else {
 					useTls = false
 				}
+
+				log.Println("ELSE", conn.RemoteAddr())
 
 				go ProxyTcp(conn, tunnel.ClientAddress, tunnel.ClientPort, useTls, c.certConfig)
 			}
