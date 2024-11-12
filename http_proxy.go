@@ -1,6 +1,7 @@
 package boringproxy
 
 import (
+	"crypto/tls"
 	"fmt"
 	"io"
 	"net"
@@ -31,6 +32,9 @@ func proxyRequest(w http.ResponseWriter, r *http.Request, tunnel Tunnel, httpCli
 
 	upstreamAddr := fmt.Sprintf("%s:%d", address, port)
 	upstreamUrl := fmt.Sprintf("https://%s%s", upstreamAddr, r.URL.RequestURI())
+	httpClient.Transport = &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 
 	upstreamReq, err := http.NewRequest(r.Method, upstreamUrl, r.Body)
 	if err != nil {
